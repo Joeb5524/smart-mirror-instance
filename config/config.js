@@ -127,6 +127,26 @@ let config = {
                 broadcastNewsUpdates: true
             }
         },
+        {
+            module: "HueRoomStatus",
+            position: "bottom_left",
+            config: {
+                header: "Hue Lights",
+                bridgeIp: "192.168.0.2",
+                userId: "Q-pmyBMjEW345syvySPTaHl4em5SGws5kYGPOKDp",
+
+                mode: "lights",        // default
+                refreshMs: 60000,
+
+                colour: true,          // icon colour when ON
+                showOnlyOn: false,
+                showUnreachable: true,
+                hideNameContains: ["Test"],
+
+                maxItems: 12,
+                animationSpeed: 1000
+            }
+        }
     ]
 };
 
