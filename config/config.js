@@ -128,7 +128,7 @@ let config = {
             }
         },
         {
-            module: "HueRoomStatus",
+            module: "MMM-HueRoomStatus",
             position: "bottom_left",
             config: {
                 header: "Hue Lights",
