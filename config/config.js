@@ -79,20 +79,6 @@ let config = {
             }
         },
         {
-            module: "calendar",
-            header: "UK Holidays",
-            position: "top_left",
-            config: {
-                calendars: [
-                    {
-                        fetchInterval: 7 * 24 * 60 * 60 * 1000,
-                        symbol: "calendar-check",
-                        url: "https://ics.calendarlabs.com/75/5a4ba70a/UK_Holidays.ics"
-                    }
-                ]
-            }
-        },
-        {
             module: "weather",
             position: "top_right",
             config: {
