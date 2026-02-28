@@ -2,17 +2,31 @@
 
 Module.register("MMM-AssistTouch", {
     defaults: {
-        screens: ["home", "meds"],
+        screens: ["home", "meds", "care"],
         startScreen: "home",
+
         lockString: "MMM-AssistTouch",
-        animationMs: 0,
-        cooldownMs: 800
+        animationMs: 250,
+        cooldownMs: 800,
+
+        managedByDefault: false,
+        defaultTag: "home",
+        excludedModules: ["MMM-AssistTouch"],
+
+        toastMs: 1200
     },
 
     start() {
-        this.current = this._clampIndex(this.config.screens.indexOf(this.config.startScreen));
-        this._lastSwipeAt = 0;
         this._hammer = null;
+        this._lastSwipeAt = 0;
+        this._toastUntil = 0;
+
+        this._screens = Array.isArray(this.config.screens) && this.config.screens.length
+            ? this.config.screens.map(String)
+            : ["home"];
+
+        const startIdx = this._screens.indexOf(String(this.config.startScreen));
+        this.current = startIdx >= 0 ? startIdx : 0;
     },
 
     getStyles() {
@@ -24,15 +38,24 @@ Module.register("MMM-AssistTouch", {
     },
 
     getDom() {
-        const el = document.createElement("div");
-        el.className = "mat-root";
-        return el;
+        const root = document.createElement("div");
+        root.className = "mat-root";
+
+        const now = Date.now();
+        const showToast = now < this._toastUntil;
+
+        const toast = document.createElement("div");
+        toast.className = `mat-toast ${showToast ? "mat-toast--show" : ""}`;
+        toast.textContent = this._screens[this.current] || "";
+        root.appendChild(toast);
+
+        return root;
     },
 
     notificationReceived(notification) {
         if (notification === "DOM_OBJECTS_CREATED") {
             this._attachSwipe();
-            this._applyScreen();
+            this.applyScreen();
         }
     },
 
@@ -50,27 +73,50 @@ Module.register("MMM-AssistTouch", {
         if (now - this._lastSwipeAt < this.config.cooldownMs) return;
         this._lastSwipeAt = now;
 
-        this.current = (this.current + 1) % this.config.screens.length;
-        this._applyScreen();
+        this.current = (this.current + 1) % this._screens.length;
+        this.applyScreen();
+        this._showToast();
     },
 
-    _applyScreen() {
-        const activeTag = this.config.screens[this.current];
+    _showToast() {
+        this._toastUntil = Date.now() + (Number(this.config.toastMs) || 1200);
+        this.updateDom(0);
+
+        setTimeout(() => {
+            this.updateDom(0);
+        }, (Number(this.config.toastMs) || 1200) + 30);
+    },
+
+    applyScreen() {
+        const activeTag = this._screens[this.current];
         const lock = this.config.lockString;
         const ms = Number(this.config.animationMs) || 0;
 
-        MM.getModules().enumerate((m) => {
-            if (m.name === this.name) return;
+        const excluded = new Set(
+            (Array.isArray(this.config.excludedModules) ? this.config.excludedModules : [])
+                .map(String)
+        );
+        excluded.add(this.name);
 
-            const tags = (m.config && Array.isArray(m.config.screenTags)) ? m.config.screenTags : null;
-            if (!tags) return; // not managed
+        MM.getModules().enumerate((m) => {
+            if (excluded.has(m.name)) return;
+
+            const tags = this._getScreenTagsFor(m);
+            if (!tags) return;
 
             if (tags.includes(activeTag)) m.show(ms, { lockString: lock });
             else m.hide(ms, { lockString: lock });
         });
     },
 
-    _clampIndex(i) {
-        return i >= 0 ? i : 0;
+    _getScreenTagsFor(moduleInstance) {
+        const tags = moduleInstance.config && Array.isArray(moduleInstance.config.screenTags)
+            ? moduleInstance.config.screenTags.map(String)
+            : null;
+
+        if (tags && tags.length) return tags;
+
+        if (this.config.managedByDefault) return [String(this.config.defaultTag || "home")];
+        return null;
     }
 });
