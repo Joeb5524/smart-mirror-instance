@@ -1,0 +1,9 @@
+{
+  "name": "mmm-assisttouch",
+  "version": "1.0.0",
+  "description": "Touch gesture controller for screen switching in MagicMirror",
+  "main": "MMM-AssistTouch.js",
+  "dependencies": {
+    "hammerjs": "^2.0.8"
+  }
+}

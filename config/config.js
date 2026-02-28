@@ -43,6 +43,7 @@ let config = {
             position: "bottom_right",
             header: "Medication",
             config: {
+                screenTags: ["meds"],
                 medications: [
                     { name: "Fluoxetine", dosage: "20mg", time: "09:00" }
                 ],
@@ -72,7 +73,10 @@ let config = {
         },
         {
             module: "clock",
-            position: "top_left"
+            position: "top_left",
+            config: {
+                screenTags: ["home"],
+            }
         },
         {
             module: "calendar",
