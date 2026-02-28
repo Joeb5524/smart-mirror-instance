@@ -44,8 +44,7 @@ let config = {
             header: "Medication",
             config: {
                 medications: [
-                    { name: "Sertraline", dosage: "150mg", time: "09:00" },
-                    { name: "Vitamin D", dosage: "1000IU", time: "18:00" }
+                    { name: "Fluoxetine", dosage: "20mg", time: "09:00" }
                 ],
                 alertWindowMinutes: 15,
                 missedGraceMinutes: 60,
