@@ -31,6 +31,13 @@ Module.register("MMM-AssistTouch", {
         keyNext: ["ArrowDown", "PageDown", " ", "n"],
         keyHome: ["Home", "h"],
 
+        // Mouse/web fallback: drag down anywhere to change screen
+        enablePointerSwipe: true,
+        pointerSwipeThresholdPx: 120, // must drag down at least this far
+        pointerSwipeSlopPx: 8,        // ignore tiny jitters
+        pointerSwipeMaxMs: 900,       // must complete within this time
+        pointerSwipeButton: 0,        // left click only
+
         debugGestures: false
     },
 
@@ -40,7 +47,15 @@ Module.register("MMM-AssistTouch", {
         this._toastUntil = 0;
 
         this._onKeyDown = null;
+
         this._simpleRemoteActive = false;
+
+        // pointer swipe state
+        this._ptr = { active: false, id: null, x0: 0, y0: 0, t0: 0 };
+
+        this._onPtrDown = null;
+        this._onPtrMove = null;
+        this._onPtrUp = null;
 
         this._screens = Array.isArray(this.config.screens) && this.config.screens.length
             ? this.config.screens.map(String)
@@ -66,11 +81,13 @@ Module.register("MMM-AssistTouch", {
     suspend() {
         this._detachGestures();
         this._detachKeyboard();
+        this._detachPointerSwipe();
     },
 
     resume() {
         this._attachGestures();
         this._attachKeyboard();
+        this._attachPointerSwipe();
     },
 
     getDom() {
@@ -103,6 +120,7 @@ Module.register("MMM-AssistTouch", {
         if (notification === "DOM_OBJECTS_CREATED") {
             this._attachGestures();
             this._attachKeyboard();
+            this._attachPointerSwipe();
             this.applyScreen(true);
             this.updateDom(0);
             return;
@@ -166,12 +184,6 @@ Module.register("MMM-AssistTouch", {
             this._onLongPress();
         });
 
-        if (this.config.debugGestures) {
-            hammer.on("panstart panmove panend", (ev) => {
-                console.log("[MMM-AssistTouch] pan", ev.type, "deltaY=", ev.deltaY, "velocityY=", ev.velocityY);
-            });
-        }
-
         this._hammer = hammer;
     },
 
@@ -212,6 +224,76 @@ Module.register("MMM-AssistTouch", {
         if (!this._onKeyDown) return;
         window.removeEventListener("keydown", this._onKeyDown);
         this._onKeyDown = null;
+    },
+
+
+    _attachPointerSwipe() {
+        if (!this.config.enablePointerSwipe) return;
+        if (this._onPtrDown) return;
+
+        const threshold = Number(this.config.pointerSwipeThresholdPx) || 120;
+        const slop = Number(this.config.pointerSwipeSlopPx) || 8;
+        const maxMs = Number(this.config.pointerSwipeMaxMs) || 900;
+        const btn = Number.isFinite(Number(this.config.pointerSwipeButton)) ? Number(this.config.pointerSwipeButton) : 0;
+
+        this._onPtrDown = (e) => {
+            // left mouse only; allow touch/pen (button often 0 there too)
+            if (typeof e.button === "number" && e.button !== btn) return;
+            // ignore right click etc
+            if (e.isPrimary === false) return;
+
+            this._ptr.active = true;
+            this._ptr.id = e.pointerId;
+            this._ptr.x0 = e.clientX;
+            this._ptr.y0 = e.clientY;
+            this._ptr.t0 = Date.now();
+        };
+
+        this._onPtrMove = (e) => {
+            if (!this._ptr.active) return;
+            if (this._ptr.id !== null && e.pointerId !== this._ptr.id) return;
+
+            const dx = e.clientX - this._ptr.x0;
+            const dy = e.clientY - this._ptr.y0;
+            const dt = Date.now() - this._ptr.t0;
+
+            // ignore tiny jitter
+            if (Math.abs(dx) < slop && Math.abs(dy) < slop) return;
+
+            // trigger only on clear downward drag
+            if (dy >= threshold && dt <= maxMs) {
+                this._ptr.active = false;
+                this._ptr.id = null;
+                if (this.config.debugGestures) console.log("[MMM-AssistTouch] pointer drag down -> next screen");
+                this._onSwipeDown();
+            }
+        };
+
+        this._onPtrUp = (e) => {
+            if (!this._ptr.active) return;
+            if (this._ptr.id !== null && e.pointerId !== this._ptr.id) return;
+            this._ptr.active = false;
+            this._ptr.id = null;
+        };
+
+
+        document.addEventListener("pointerdown", this._onPtrDown, true);
+        document.addEventListener("pointermove", this._onPtrMove, true);
+        document.addEventListener("pointerup", this._onPtrUp, true);
+        document.addEventListener("pointercancel", this._onPtrUp, true);
+    },
+
+    _detachPointerSwipe() {
+        if (!this._onPtrDown) return;
+        document.removeEventListener("pointerdown", this._onPtrDown, true);
+        document.removeEventListener("pointermove", this._onPtrMove, true);
+        document.removeEventListener("pointerup", this._onPtrUp, true);
+        document.removeEventListener("pointercancel", this._onPtrUp, true);
+        this._onPtrDown = null;
+        this._onPtrMove = null;
+        this._onPtrUp = null;
+        this._ptr.active = false;
+        this._ptr.id = null;
     },
 
     _shouldBlockSwipe() {
