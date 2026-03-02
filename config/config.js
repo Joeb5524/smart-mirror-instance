@@ -1,47 +1,27 @@
-/* Config Sample
- *
- * For more information on how you can configure this file
- * see https://docs.magicmirror.builders/configuration/introduction.html
- * and https://docs.magicmirror.builders/modules/configuration.html
- *
- * You can use environment variables using a `config.js.template` file instead of `config.js`
- * which will be converted to `config.js` while starting. For more information
- * see https://docs.magicmirror.builders/configuration/introduction.html#enviromnent-variables
- */
 let config = {
-    address: "localhost",	// Address to listen on, can be:
-    // - "localhost", "127.0.0.1", "::1" to listen on loopback interface
-    // - another specific IPv4/6 to listen on a specific interface
-    // - "0.0.0.0", "::" to listen on any interface
-    // Default, when address config is left out or empty, is "localhost"
+    address: "localhost",
     port: 8080,
-    basePath: "/",	// The URL path where MagicMirror² is hosted. If you are using a Reverse proxy
-    // you must set the sub path here. basePath must end with a /
-    ipWhitelist: [],	// Set [] to allow all IP addresses
-    // or add a specific IPv4 of 192.168.1.5 :
-    // ["127.0.0.1", "::ffff:127.0.0.1", "::1", "::ffff:192.168.1.5"],
-    // or IPv4 range of 192.168.3.0 --> 192.168.3.15 use CIDR format :
-    // ["127.0.0.1", "::ffff:127.0.0.1", "::1", "::ffff:192.168.3.0/28"],
+    basePath: "/",
+    ipWhitelist: [],
 
-    useHttps: false,			// Support HTTPS or not, default "false" will use HTTP
-    httpsPrivateKey: "",	// HTTPS private key path, only require when useHttps is true
-    httpsCertificate: "",	// HTTPS Certificate path, only require when useHttps is true
+    useHttps: false,
+    httpsPrivateKey: "",
+    httpsCertificate: "",
 
     language: "en",
-    locale: "en-US",   // this variable is provided as a consistent location
-    // it is currently only used by 3rd party modules. no MagicMirror code uses this value
-    // as we have no usage, we  have no constraints on what this field holds
-    // see https://en.wikipedia.org/wiki/Locale_(computer_software) for the possibilities
+    locale: "en-US",
 
-    logLevel: ["INFO", "LOG", "WARN", "ERROR"], // Add "DEBUG" for even more logging
+    logLevel: ["INFO", "LOG", "WARN", "ERROR"],
     timeFormat: 24,
     units: "metric",
 
     modules: [
+
         {
             module: "MMM-VoiceControl",
             position: "fullscreen_above",
             config: {
+                screenTags: ["home", "meds", "care"],
                 modelDir: "models/vosk-model-small-en-us-0.15",
                 wakeWord: "mirror",
                 commandWindowMs: 4000,
@@ -56,32 +36,12 @@ let config = {
                 ]
             }
         },
-        {
-            module: "MMM-MedicationReminder",
-            position: "bottom_right",
-            header: "Medication",
-            config: {
-                screenTags: ["meds"],
-                medications: [
-                    { name: "Fluoxetine", dosage: "20mg", time: "09:00" }
-                ],
-                alertWindowMinutes: 15,
-                missedGraceMinutes: 60,
-                showRelative: true,
-                maxItems: 6
-            }
-        },
-        {
-            module: "alert",
-        },
-        {
-            module: "updatenotification",
-            position: "top_bar"
-        },
+
         {
             module: "MMM-SimpleRemote",
             position: "fullscreen_above",
             config: {
+                screenTags: ["home", "meds", "care"],
                 basePath: "/mm-simple-remote",
                 displaySeconds: 25,
                 maxQueue: 25,
@@ -89,17 +49,54 @@ let config = {
                 dismissOnTouch: true
             }
         },
+
+
+        {
+            module: "alert",
+            config: {
+                // alert has no position; keep it global
+                screenTags: ["home", "meds", "care"]
+            }
+        },
+
+        {
+            module: "updatenotification",
+            position: "top_bar",
+            config: {
+                screenTags: ["home", "meds", "care"]
+            }
+        },
+
+
+        {
+            module: "MMM-MedicationReminder",
+            position: "bottom_right",
+            header: "Medication",
+            config: {
+                screenTags: ["meds"],
+                medications: [{ name: "Fluoxetine", dosage: "20mg", time: "09:00" }],
+                alertWindowMinutes: 15,
+                missedGraceMinutes: 60,
+                showRelative: true,
+                maxItems: 6
+            }
+        },
+
+
         {
             module: "clock",
             position: "top_left",
             config: {
-                screenTags: ["home"],
+                screenTags: ["home"]
             }
         },
+
+
         {
             module: "weather",
             position: "top_right",
             config: {
+                screenTags: ["home"],
                 weatherProvider: "openmeteo",
                 type: "current",
                 lat: 52.4131915,
@@ -111,6 +108,7 @@ let config = {
             position: "top_right",
             header: "Weather Forecast",
             config: {
+                screenTags: ["home"],
                 appendLocationNameToHeader: true,
                 weatherProvider: "openmeteo",
                 type: "forecast",
@@ -118,10 +116,12 @@ let config = {
                 lon: -4.0811541
             }
         },
+
         {
             module: "newsfeed",
             position: "bottom_bar",
             config: {
+                screenTags: ["home"],
                 feeds: [
                     {
                         title: "New York Times",
@@ -134,18 +134,21 @@ let config = {
                 broadcastNewsUpdates: true
             }
         },
+
+
         {
             module: "MMM-HueRoomStatus",
             position: "bottom_left",
             config: {
+                screenTags: ["home", "care"],
                 header: "Hue Lights",
                 bridgeIp: "192.168.0.2",
                 userId: "Q-pmyBMjEW345syvySPTaHl4em5SGws5kYGPOKDp",
 
-                mode: "lights",        // default
+                mode: "lights",
                 refreshMs: 60000,
 
-                colour: true,          // icon colour when ON
+                colour: true,
                 showOnlyOn: false,
                 showUnreachable: true,
                 hideNameContains: ["Test"],
@@ -157,5 +160,6 @@ let config = {
     ]
 };
 
-/*************** DO NOT EDIT THE LINE BELOW ***************/
-if (typeof module !== "undefined") { module.exports = config; }
+if (typeof module !== "undefined") {
+    module.exports = config;
+}
