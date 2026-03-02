@@ -16,6 +16,15 @@ let config = {
     units: "metric",
 
     modules: [
+        {
+            module: "MMM-AssistTouch",
+            position: "fullscreen_above",
+            config: {
+                screens: ["home", "meds", "care"],
+                startScreen: "home",
+                showScreenIndicator: true,
+            }
+        },
 
         {
             module: "MMM-VoiceControl",
