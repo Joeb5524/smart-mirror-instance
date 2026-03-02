@@ -20,3 +20,29 @@
 }
 
 .mat-toast--show { opacity: 1; }
+.mat-indicator {
+    position: fixed;
+    z-index: 9998;
+    padding: 6px 10px;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.55);
+    font-size: 18px;
+    letter-spacing: 0.12em;
+    pointer-events: none;
+}
+
+.mat-indicator--top_bar {
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.mat-indicator--top_right {
+    top: 10px;
+    right: 10px;
+}
+
+.mat-indicator--top_left {
+    top: 10px;
+    left: 10px;
+}

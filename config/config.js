@@ -63,7 +63,6 @@ let config = {
         {
             module: "alert",
             config: {
-                // alert has no position; keep it global
                 screenTags: ["home", "meds", "care"]
             }
         },

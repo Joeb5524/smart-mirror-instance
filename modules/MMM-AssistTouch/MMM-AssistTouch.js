@@ -19,11 +19,14 @@ Module.register("MMM-AssistTouch", {
 
         longPressMs: 650,
 
-        // If MMM-SimpleRemote is visible don't switch screens on swipe.
-        blockSwipeWhenSimpleRemoteActive: true,
+        showScreenIndicator: true,
+        screenIndicatorPosition: "top_bar",
+        screenIndicatorLabelMap: { home: "HOME", meds: "MEDS", care: "CARE" },
 
+        //for now maybe change?
+        blockLongPressWhenSimpleRemoteActive: false,
+        blockSwipeWhenSimpleRemoteActive: false,
 
-        blockLongPressWhenSimpleRemoteActive: false
     },
 
     start() {
@@ -65,6 +68,17 @@ Module.register("MMM-AssistTouch", {
         toast.className = `mat-toast ${showToast ? "mat-toast--show" : ""}`;
         toast.textContent = this.activeScreen();
         root.appendChild(toast);
+
+        if (this.config.showScreenIndicator) {
+            const indicator = document.createElement("div");
+            indicator.className = `mat-indicator mat-indicator--${this.config.screenIndicatorPosition}`;
+
+            const tag = this._screens[this.current] || "home";
+            const labelMap = this.config.screenIndicatorLabelMap || {};
+            indicator.textContent = labelMap[tag] ? labelMap[tag] : String(tag).toUpperCase();
+
+            root.appendChild(indicator);
+        }
 
         return root;
     },
