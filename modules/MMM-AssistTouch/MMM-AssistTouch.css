@@ -46,3 +46,13 @@
     top: 10px;
     left: 10px;
 }
+html, body {
+    touch-action: none;
+    overscroll-behavior: none;
+}
+.mat-root {
+    position: fixed;
+    inset: 0;
+    z-index: 9997;
+    pointer-events: none;
+}

@@ -27,12 +27,19 @@ Module.register("MMM-AssistTouch", {
         blockLongPressWhenSimpleRemoteActive: false,
         blockSwipeWhenSimpleRemoteActive: false,
 
+        enableKeyboard: true,
+        keyNext: ["ArrowDown", "PageDown", " " , "n"],
+        keyHome: ["Home", "h"],
+        debugGestures: false,
+
+
     },
 
     start() {
         this._hammer = null;
         this._lastSwipeAt = 0;
         this._toastUntil = 0;
+        this._onKeyDown = null;
 
         this._screens = Array.isArray(this.config.screens) && this.config.screens.length
             ? this.config.screens.map(String)
@@ -87,6 +94,7 @@ Module.register("MMM-AssistTouch", {
         if (notification === "DOM_OBJECTS_CREATED") {
             this._attachGestures();
             this.applyScreen(true);
+            this._attachKeyboard();
             return;
         }
 
@@ -121,16 +129,46 @@ Module.register("MMM-AssistTouch", {
     },
 
     _attachGestures() {
-        if (this._hammer || !window.Hammer) return;
+        if (this._hammer || !window.Hammer) {
+            if (!window.Hammer) console.warn("[MMM-AssistTouch] HammerJS not available (window.Hammer missing).");
+            return;
+        }
 
         const hammer = new window.Hammer(document.body);
-        hammer.get("swipe").set({ direction: window.Hammer.DIRECTION_VERTICAL });
+
+        // allow me to use mouse for testing on non touchscreen hardware
+        hammer.get("swipe").set({
+            direction: window.Hammer.DIRECTION_VERTICAL,
+            threshold: 10,
+            velocity: 0.15
+        });
+
         hammer.get("press").set({ time: Number(this.config.longPressMs) || 650 });
 
-        hammer.on("swipedown", () => this._onSwipeDown());
-        hammer.on("press", () => this._onLongPress());
+        hammer.on("swipedown", () => {
+            if (this.config.debugGestures) console.log("[MMM-AssistTouch] swipedown");
+            this._onSwipeDown();
+        });
+
+        hammer.on("press", () => {
+            if (this.config.debugGestures) console.log("[MMM-AssistTouch] press");
+            this._onLongPress();
+        });
+
+        // debug
+        if (this.config.debugGestures) {
+            hammer.on("panstart panmove panend", (ev) => {
+                console.log("[MMM-AssistTouch] pan", ev.type, "deltaY=", ev.deltaY, "velocityY=", ev.velocityY);
+            });
+            hammer.on("tap", () => console.log("[MMM-AssistTouch] tap"));
+        }
 
         this._hammer = hammer;
+    },
+    _detachGestures() {
+        if (!this._hammer) return;
+        try { this._hammer.destroy(); } catch (_) {}
+        this._hammer = null;
     },
 
     _shouldBlockSwipe() {
@@ -225,5 +263,48 @@ Module.register("MMM-AssistTouch", {
         } catch (_) {
             return null;
         }
-    }
+    },
+    suspend() {
+        this._detachGestures();
+        this._detachKeyboard();
+    },
+
+    resume() {
+        this._attachGestures();
+        this._attachKeyboard();
+    },
+
+    _attachKeyboard() {
+        if (!this.config.enableKeyboard) return;
+        if (this._onKeyDown) return;
+
+        this._onKeyDown = (e) => {
+            const t = e.target && e.target.tagName ? String(e.target.tagName).toLowerCase() : "";
+            if (t === "input" || t === "textarea" || t === "select") return;
+
+            const key = e.key;
+
+            const nextKeys = new Set((this.config.keyNext || []).map(String));
+            const homeKeys = new Set((this.config.keyHome || []).map(String));
+
+            if (nextKeys.has(key)) {
+                e.preventDefault();
+                this._onSwipeDown();
+                return;
+            }
+
+            if (homeKeys.has(key)) {
+                e.preventDefault();
+                this._onLongPress();
+            }
+        };
+
+        window.addEventListener("keydown", this._onKeyDown, { passive: false });
+    },
+
+    _detachKeyboard() {
+        if (!this._onKeyDown) return;
+        window.removeEventListener("keydown", this._onKeyDown);
+        this._onKeyDown = null;
+    },
 });
