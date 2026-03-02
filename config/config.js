@@ -23,6 +23,8 @@ let config = {
                 screens: ["home", "meds", "care"],
                 startScreen: "home",
                 showScreenIndicator: true,
+                screenIndicatorPosition: "top_left",
+                enableKeyboard: true,
             }
         },
 

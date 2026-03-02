@@ -1,4 +1,4 @@
-/* global Module */
+/* global Module, MM */
 
 Module.register("MMM-AssistTouch", {
     defaults: {
@@ -20,32 +20,31 @@ Module.register("MMM-AssistTouch", {
         longPressMs: 650,
 
         showScreenIndicator: true,
-        screenIndicatorPosition: "top_bar",
+        // supported: "top_bar" | "top_left" | "top_right"
+        screenIndicatorPosition: "top_left",
         screenIndicatorLabelMap: { home: "HOME", meds: "MEDS", care: "CARE" },
 
-        //for now maybe change?
-        blockLongPressWhenSimpleRemoteActive: false,
         blockSwipeWhenSimpleRemoteActive: false,
+        blockLongPressWhenSimpleRemoteActive: false,
 
         enableKeyboard: true,
-        keyNext: ["ArrowDown", "PageDown", " " , "n"],
+        keyNext: ["ArrowDown", "PageDown", " ", "n"],
         keyHome: ["Home", "h"],
-        debugGestures: false,
 
-
+        debugGestures: false
     },
 
     start() {
         this._hammer = null;
         this._lastSwipeAt = 0;
         this._toastUntil = 0;
+
         this._onKeyDown = null;
+        this._simpleRemoteActive = false;
 
         this._screens = Array.isArray(this.config.screens) && this.config.screens.length
             ? this.config.screens.map(String)
             : ["home"];
-
-        this._simpleRemoteActive = false;
 
         const stored = this._loadStoredScreen();
         if (stored && this._screens.includes(stored)) {
@@ -61,7 +60,17 @@ Module.register("MMM-AssistTouch", {
     },
 
     getScripts() {
-        return ["node_modules/hammerjs/hammer.min.js"];
+        return ["vendor/hammer.min.js"];
+    },
+
+    suspend() {
+        this._detachGestures();
+        this._detachKeyboard();
+    },
+
+    resume() {
+        this._attachGestures();
+        this._attachKeyboard();
     },
 
     getDom() {
@@ -93,11 +102,11 @@ Module.register("MMM-AssistTouch", {
     notificationReceived(notification, payload) {
         if (notification === "DOM_OBJECTS_CREATED") {
             this._attachGestures();
-            this.applyScreen(true);
             this._attachKeyboard();
+            this.applyScreen(true);
+            this.updateDom(0);
             return;
         }
-
 
         if (notification === "REMOTE_ALERT_SENT" && payload && payload.alertId) {
             this._simpleRemoteActive = true;
@@ -108,6 +117,7 @@ Module.register("MMM-AssistTouch", {
             this._simpleRemoteActive = false;
             return;
         }
+
         if (notification === "ASSIST_TOUCH_NEXT_SCREEN") {
             this._onSwipeDown();
             return;
@@ -129,14 +139,15 @@ Module.register("MMM-AssistTouch", {
     },
 
     _attachGestures() {
-        if (this._hammer || !window.Hammer) {
-            if (!window.Hammer) console.warn("[MMM-AssistTouch] HammerJS not available (window.Hammer missing).");
+        if (this._hammer) return;
+
+        if (!window.Hammer) {
+            console.warn("[MMM-AssistTouch] HammerJS not available (window.Hammer missing).");
             return;
         }
 
         const hammer = new window.Hammer(document.body);
 
-        // allow me to use mouse for testing on non touchscreen hardware
         hammer.get("swipe").set({
             direction: window.Hammer.DIRECTION_VERTICAL,
             threshold: 10,
@@ -155,20 +166,52 @@ Module.register("MMM-AssistTouch", {
             this._onLongPress();
         });
 
-        // debug
         if (this.config.debugGestures) {
             hammer.on("panstart panmove panend", (ev) => {
                 console.log("[MMM-AssistTouch] pan", ev.type, "deltaY=", ev.deltaY, "velocityY=", ev.velocityY);
             });
-            hammer.on("tap", () => console.log("[MMM-AssistTouch] tap"));
         }
 
         this._hammer = hammer;
     },
+
     _detachGestures() {
         if (!this._hammer) return;
         try { this._hammer.destroy(); } catch (_) {}
         this._hammer = null;
+    },
+
+    _attachKeyboard() {
+        if (!this.config.enableKeyboard) return;
+        if (this._onKeyDown) return;
+
+        this._onKeyDown = (e) => {
+            const t = e.target && e.target.tagName ? String(e.target.tagName).toLowerCase() : "";
+            if (t === "input" || t === "textarea" || t === "select") return;
+
+            const key = e.key;
+            const nextKeys = new Set((this.config.keyNext || []).map(String));
+            const homeKeys = new Set((this.config.keyHome || []).map(String));
+
+            if (nextKeys.has(key)) {
+                e.preventDefault();
+                this._onSwipeDown();
+                return;
+            }
+
+            if (homeKeys.has(key)) {
+                e.preventDefault();
+                this._onLongPress();
+            }
+        };
+
+        window.addEventListener("keydown", this._onKeyDown, { passive: false });
+    },
+
+    _detachKeyboard() {
+        if (!this._onKeyDown) return;
+        window.removeEventListener("keydown", this._onKeyDown);
+        this._onKeyDown = null;
     },
 
     _shouldBlockSwipe() {
@@ -218,8 +261,7 @@ Module.register("MMM-AssistTouch", {
         this._storeScreen(activeTag);
 
         const excluded = new Set(
-            (Array.isArray(this.config.excludedModules) ? this.config.excludedModules : [])
-                .map(String)
+            (Array.isArray(this.config.excludedModules) ? this.config.excludedModules : []).map(String)
         );
         excluded.add(this.name);
 
@@ -238,6 +280,8 @@ Module.register("MMM-AssistTouch", {
             initial: !!isInitial,
             at: Date.now()
         });
+
+        this.updateDom(0);
     },
 
     _getScreenTagsFor(moduleInstance) {
@@ -252,59 +296,10 @@ Module.register("MMM-AssistTouch", {
     },
 
     _storeScreen(screen) {
-        try {
-            window.localStorage.setItem(String(this.config.storageKey), String(screen));
-        } catch (_) {}
+        try { window.localStorage.setItem(String(this.config.storageKey), String(screen)); } catch (_) {}
     },
 
     _loadStoredScreen() {
-        try {
-            return window.localStorage.getItem(String(this.config.storageKey));
-        } catch (_) {
-            return null;
-        }
-    },
-    suspend() {
-        this._detachGestures();
-        this._detachKeyboard();
-    },
-
-    resume() {
-        this._attachGestures();
-        this._attachKeyboard();
-    },
-
-    _attachKeyboard() {
-        if (!this.config.enableKeyboard) return;
-        if (this._onKeyDown) return;
-
-        this._onKeyDown = (e) => {
-            const t = e.target && e.target.tagName ? String(e.target.tagName).toLowerCase() : "";
-            if (t === "input" || t === "textarea" || t === "select") return;
-
-            const key = e.key;
-
-            const nextKeys = new Set((this.config.keyNext || []).map(String));
-            const homeKeys = new Set((this.config.keyHome || []).map(String));
-
-            if (nextKeys.has(key)) {
-                e.preventDefault();
-                this._onSwipeDown();
-                return;
-            }
-
-            if (homeKeys.has(key)) {
-                e.preventDefault();
-                this._onLongPress();
-            }
-        };
-
-        window.addEventListener("keydown", this._onKeyDown, { passive: false });
-    },
-
-    _detachKeyboard() {
-        if (!this._onKeyDown) return;
-        window.removeEventListener("keydown", this._onKeyDown);
-        this._onKeyDown = null;
-    },
+        try { return window.localStorage.getItem(String(this.config.storageKey)); } catch (_) { return null; }
+    }
 });
