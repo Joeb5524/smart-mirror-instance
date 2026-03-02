@@ -86,6 +86,20 @@ Module.register("MMM-AssistTouch", {
             this._simpleRemoteActive = false;
             return;
         }
+        if (notification === "ASSIST_TOUCH_NEXT_SCREEN") {
+            this._onSwipeDown();
+            return;
+        }
+
+        if (notification === "ASSIST_SCREEN_SET" && payload && payload.screen) {
+            const idx = this._screens.indexOf(String(payload.screen));
+            if (idx >= 0) {
+                this.current = idx;
+                this.applyScreen(false);
+                this._toast();
+            }
+            return;
+        }
     },
 
     activeScreen() {

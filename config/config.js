@@ -39,6 +39,24 @@ let config = {
 
     modules: [
         {
+            module: "MMM-VoiceControl",
+            position: "fullscreen_above",
+            config: {
+                modelDir: "models/vosk-model-small-en-us-0.15",
+                wakeWord: "mirror",
+                commandWindowMs: 4000,
+                device: "plughw:2,0",
+                commands: [
+                    "next screen",
+                    "home screen",
+                    "meds screen",
+                    "care screen",
+                    "acknowledge alert",
+                    "dismiss alert"
+                ]
+            }
+        },
+        {
             module: "MMM-MedicationReminder",
             position: "bottom_right",
             header: "Medication",
