@@ -1,3 +1,4 @@
 config/private.json
 *.env
 *.log
+config/secrets.js
