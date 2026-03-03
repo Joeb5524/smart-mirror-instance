@@ -1,0 +1,9 @@
+{
+  "modules": [
+    { "name": "MMM-AssistTouch", "repo": "https://github.com/Joeb5524/MMM-AssistTouch.git", "ref": "main" },
+    { "name": "MMM-SimpleRemote", "repo": "https://github.com/Joeb5524/MMM-SimpleRemote.git", "ref": "main" },
+    { "name": "MMM-MedicationReminder", "repo": "https://github.com/Joeb5524/MMM-MedicationReminder.git", "ref": "main" },
+    { "name": "MMM-VoiceControl", "repo": "https://github.com/Joeb5524/MMM-VoiceControl.git", "ref": "main" },
+    { "name": "MMM-HueRoomStatus", "repo": "https://github.com/Joeb5524/MMM-HueRoomStatus.git", "ref": "main" }
+  ]
+}
