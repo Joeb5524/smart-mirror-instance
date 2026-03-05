@@ -92,6 +92,17 @@ let config = {
                 maxItems: 6
             }
         },
+        {
+            module: "MMM-MusicTiles",
+            position: "bottom_right",
+            config: {
+                screenTags: ["home"],
+                maxTiles: 3,
+                tileSizePx: 220,
+                showTitle: false,
+                defaultVolume: 0.7
+            }
+        },
 
 
         {
