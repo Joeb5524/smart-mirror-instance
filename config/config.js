@@ -98,7 +98,7 @@ let config = {
             config: {
                 screenTags: ["home"],
                 maxTiles: 3,
-                tileSizePx: 220,
+                tileSizePx: 170,
                 showTitle: false,
                 defaultVolume: 0.7
             }
