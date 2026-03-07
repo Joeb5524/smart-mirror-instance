@@ -72,7 +72,11 @@ let config = {
                 displaySeconds: 25,
                 maxQueue: 25,
                 showTimestamp: true,
-                dismissOnTouch: true
+                dismissOnTouch: true,
+                hue:{
+                    bridgeIp: "192.168.0.2",
+                    userId: "Q-pmyBMjEW345syvySPTaHl4em5SGws5kYGPOKDp",
+                }
             }
         },
 
