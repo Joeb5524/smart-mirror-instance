@@ -44,7 +44,21 @@ let config = {
                     "care screen",
                     "acknowledge alert",
                     "dismiss alert",
-                    "medication taken"
+                    "medication taken",
+                    "play calm music",
+                    "play sleep music",
+                    "play morning music",
+                    "play exercise music",
+                    "play music",
+                    "stop music",
+                    "pause music",
+                    "lights on",
+                    "lights off",
+                    "toggle lights",
+                    "set lights red",
+                    "set lights green",
+                    "set lights blue",
+                    "set lights white"
                 ]
             }
         },
