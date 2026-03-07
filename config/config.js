@@ -76,6 +76,9 @@ let config = {
                 hue:{
                     bridgeIp: "192.168.0.2",
                     userId: "Q-pmyBMjEW345syvySPTaHl4em5SGws5kYGPOKDp",
+                    hueApplicationKey: "Q-pmyBMjEW345syvySPTaHl4em5SGws5kYGPOKDp",
+                    apiVerison: "auto",
+                    enabled: true
                 }
             }
         },
