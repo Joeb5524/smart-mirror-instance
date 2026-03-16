@@ -23,6 +23,7 @@ let config = {
             config: {
                 screens: ["home", "joe"],
                 updateInterval: 10 * 60 * 1000, //optional - allows you to set how often to check for updates, in milliseconds - 10 minutes is the default
+                hideClosedParks: true,
                 park: {
                     entity: "b08d9272-d070-4580-9fcd-375270b191a7", //required - https://themeparks.wiki/browse/
                     rides: [
