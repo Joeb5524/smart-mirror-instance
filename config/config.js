@@ -17,6 +17,22 @@ let config = {
 
     modules: [
         {
+            module: "MMM-ThemeParkWaitTimes",
+            header: "Thorpe Park",
+            position: "top_center",
+            config: {
+                screens: ["home", "joe"],
+                updateInterval: 10 * 60 * 1000, //optional - allows you to set how often to check for updates, in milliseconds - 10 minutes is the default
+                park: {
+                    entity: "b08d9272-d070-4580-9fcd-375270b191a7", //required - https://themeparks.wiki/browse/
+                    rides: [
+                        //https://api.themeparks.wiki/v1/entity/75ea578a-adc8-4116-a54d-dccb60765ef9/live  - use the "id" for each ride
+
+                    ],
+                },
+            },
+        },
+        {
             module: "MMM-AssistTouch",
             position: "fullscreen_above",
             config: {
