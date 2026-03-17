@@ -34,6 +34,23 @@ let config = {
             },
         },
         {
+            module: "MMM-ThemeParkWaitTimes",
+            header: "Thorpe Park",
+            position: "top_center",
+            config: {
+                screens: ["home", "joe"],
+                updateInterval: 10 * 60 * 1000, //optional - allows you to set how often to check for updates, in milliseconds - 10 minutes is the default
+                hideClosedParks: true,
+                park: {
+                    entity: "30713cf6-69a9-47c9-a505-52bb965f01be", //efteling  //required - https://themeparks.wiki/browse/
+                    rides: [
+                        //https://api.themeparks.wiki/v1/entity/75ea578a-adc8-4116-a54d-dccb60765ef9/live  - use the "id" for each ride
+
+                    ],
+                },
+            },
+        },
+        {
             module: "MMM-AssistTouch",
             position: "fullscreen_above",
             config: {
