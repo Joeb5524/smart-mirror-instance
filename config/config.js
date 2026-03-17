@@ -35,12 +35,12 @@ let config = {
         },
         {
             module: "MMM-ThemeParkWaitTimes",
-            header: "Thorpe Park",
+            header: "Efteling",
             position: "top_center",
             config: {
                 screens: ["home", "joe"],
                 updateInterval: 10 * 60 * 1000, //optional - allows you to set how often to check for updates, in milliseconds - 10 minutes is the default
-                hideClosedParks: true,
+                hideClosedParks: false,
                 park: {
                     entity: "30713cf6-69a9-47c9-a505-52bb965f01be", //efteling  //required - https://themeparks.wiki/browse/
                     rides: [
