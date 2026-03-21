@@ -63,6 +63,17 @@ let config = {
                 enableKeyboard: true,
             }
         },
+        {
+            module: "MMM-CareAlert",
+            position: "top_right",
+            config: {
+                screenTags: ["care"],              // only show on the “care” screen
+                buttons: [
+                    { label: "Need help", message: "I need assistance." },
+                    { label: "Call me", message: "Please call me when you can." }
+                ]
+            }
+        },
 
         {
             module: "MMM-VoiceControl",
