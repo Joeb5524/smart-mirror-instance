@@ -16,20 +16,23 @@ let config = {
     units: "metric",
 
     modules: [
-        /*
+
         {
             module: "MMM-ThemeParkWaitTimes",
             header: "Thorpe Park",
             position: "top_center",
             config: {
-                screens: ["home", "joe"],
+                screens: ["joe"],
                 updateInterval: 10 * 60 * 1000, //optional - allows you to set how often to check for updates, in milliseconds - 10 minutes is the default
                 hideWhenClosed: true,
                 park: {
                     entity: "b08d9272-d070-4580-9fcd-375270b191a7", //required - https://themeparks.wiki/browse/
                     rides: [
                         //https://api.themeparks.wiki/v1/entity/75ea578a-adc8-4116-a54d-dccb60765ef9/live  - use the "id" for each ride
-
+                        "8f3e4f73-9b7b-4eb2-875f-be66d5a832a6", //stealth
+                        "37529c4a-2630-49df-b10a-6460d4a1d398", //saw
+                        "4964b907-cafc-4c23-b2fc-3d715c27bc88", //swarm
+                        "e3da53ff-b37c-41af-89ca-86bf20a9fb3b" //hyperia
                     ],
                 },
             },
@@ -39,19 +42,21 @@ let config = {
             header: "Efteling",
             position: "top_center",
             config: {
-                screens: ["home", "joe"],
+                screens: ["joe"],
                 updateInterval: 10 * 60 * 1000, //optional - allows you to set how often to check for updates, in milliseconds - 10 minutes is the default
                 hideWhenClosed: true,
                 park: {
                     entity: "30713cf6-69a9-47c9-a505-52bb965f01be", //efteling  //required - https://themeparks.wiki/browse/
                     rides: [
+                        "5db59b64-d2cd-4211-a1fa-b4369b6e110a", //joris
+                        "454f83b8-b767-44a9-a911-e650901e4520", //Villa Volta
                         //https://api.themeparks.wiki/v1/entity/75ea578a-adc8-4116-a54d-dccb60765ef9/live  - use the "id" for each ride
 
                     ],
                 },
             },
 
-        },*/
+        },
         {
             module: "MMM-AssistTouch",
             position: "fullscreen_above",
