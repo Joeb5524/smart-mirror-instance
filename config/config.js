@@ -16,6 +16,7 @@ let config = {
     units: "metric",
 
     modules: [
+        /*
         {
             module: "MMM-ThemeParkWaitTimes",
             header: "Thorpe Park",
@@ -49,7 +50,8 @@ let config = {
                     ],
                 },
             },
-        },
+
+        },*/
         {
             module: "MMM-AssistTouch",
             position: "fullscreen_above",
