@@ -120,7 +120,7 @@ let config = {
             module: "MMM-SimpleRemote",
             position: "fullscreen_above",
             config: {
-                screenTags: ["home", "meds", "care"],
+                screenTags: ["home", "meds", "care", "joe"],
                 basePath: "/mm-simple-remote",
                 displaySeconds: 25,
                 maxQueue: 25,
