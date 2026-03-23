@@ -61,7 +61,7 @@ let config = {
             module: "MMM-AssistTouch",
             position: "fullscreen_above",
             config: {
-                screens: ["home", "meds", "care"],
+                screens: ["home", "meds", "care", "joe"],
                 startScreen: "home",
                 showScreenIndicator: true,
                 screenIndicatorPosition: "top_left",
