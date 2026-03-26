@@ -69,13 +69,14 @@ let config = {
             }
         },
         {
-            module: "MMM-CareAlert",
+            module: "MMM-CareConnect",
             position: "top_right",
             config: {
-                screenTags: ["care"],              // only show on the “care” screen
-                buttons: [
-                    { label: "Need help", message: "I need assistance." },
-                    { label: "Call me", message: "Please call me when you can." }
+                hubBasePath: "/mm-simple-remote",
+                mirrorToken: "tokentest",
+                alertButtons: [
+                    { label: "Need help", message: "I need assistance.", level: "help" },
+                    { label: "Call me", message: "Please call me when you can.", level: "call" }
                 ]
             }
         },
@@ -122,6 +123,7 @@ let config = {
             config: {
                 screenTags: ["home", "meds", "care", "joe"],
                 basePath: "/mm-simple-remote",
+                mirrorToken: "tokentest",
                 displaySeconds: 25,
                 maxQueue: 25,
                 showTimestamp: true,
