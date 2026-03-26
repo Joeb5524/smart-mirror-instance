@@ -96,10 +96,13 @@ let config = {
                     "home screen",
                     "meds screen",
                     "care screen",
+                    "call carer",
+                    "send help",
                     "joe screen",
                     "acknowledge alert",
                     "dismiss alert",
                     "medication taken",
+                    //MusicTiles
                     "play calm music",
                     "play sleep music",
                     "play morning music",
@@ -107,6 +110,7 @@ let config = {
                     "play music",
                     "stop music",
                     "pause music",
+                    //HueRoomStatus
                     "lights on",
                     "lights off",
                     "toggle lights",
