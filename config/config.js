@@ -70,7 +70,7 @@ let config = {
         },
         {
             module: "MMM-CareConnect",
-            position: "top_right",
+            position: "top_bar",
             config: {
                 hubBasePath: "/mm-simple-remote",
                 mirrorToken: "tokentest",
