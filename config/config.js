@@ -70,7 +70,7 @@ let config = {
         },
         {
             module: "MMM-CareConnect",
-            position: "top_bar",
+            position: "upper_third",
             config: {
                 screens: ["meds", "care"],
                 hubBasePath: "/mm-simple-remote",
